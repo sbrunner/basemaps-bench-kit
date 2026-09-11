@@ -8,10 +8,11 @@ Writes results/tiles.json.
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 
-from benchlib import LEVEL_RANGES, scaledenom, tile_grid
+from benchlib import LEVEL_RANGES, RESULTS, scaledenom, tile_grid
 
 # roads_data picks prod.osm_roads for every benchmarked zoom (level dict keys: 11 -> roads, 14 -> roads)
 ROADS_TABLE = "prod.osm_roads"
@@ -37,7 +38,7 @@ def main() -> int:
     parser.add_argument("--zooms", default="12,14,16,18")
     parser.add_argument("--grid", type=int, default=4, help="grid x grid tiles per zoom")
     parser.add_argument("--min-roads", type=int, default=50, help="reject tiles with fewer roads")
-    parser.add_argument("--out", default="results/tiles.json")
+    parser.add_argument("--out", default=os.path.join(RESULTS, "tiles.json"))
     args = parser.parse_args()
 
     compose_cmd = args.compose_cmd.split()

@@ -34,6 +34,7 @@ Style `google` (style existant affecté par les templates partagés). Données: 
 
 ```bash
 cd basemaps-bench-kit
+export BENCH_PORT=8485
 
 # 1. Base de données + import imposm (~10-25 min pour Vaud+Genève)
 docker compose up -d postgis imposm
@@ -44,25 +45,22 @@ docker compose exec postgis psql -U osm -d osm -c 'select count(*) from prod.osm
 docker compose up -d --build mapserver
 
 # 3. Sélection des tuiles (validées NON VIDES via comptage SQL dans PostGIS)
-cd bench
-python3 select_tiles.py              # -> ../results/tiles.json
+python3 bench/select_tiles.py              # -> results/tiles.json
 
 # 4. Smoke tests OBLIGATOIRES (PNG non vides au niveau pixel, bons layers
 #    dans les logs debug, after ~= fix en pixels)
-python3 smoke.py                     # doit afficher SMOKE PASSED
+python3 bench/smoke.py                     # doit afficher SMOKE PASSED
 
 # 5. Passer en mode mesure (sans logs debug), recréer le conteneur
-cd ..
 MS_DEBUGLEVEL=0 docker compose up -d mapserver
 sleep 5
 
 # 6. Benchmark (~20-45 min)
-cd bench
-python3 run_bench.py                 # -> ../results/raw.csv
+python3 bench/run_bench.py                 # -> results/raw.csv
 #    options: --repeats 11 (vrai p90), --max-tiles 8 (plus court), --zooms via tiles.json
 
 # 7. Agrégation
-python3 aggregate.py                 # -> ../results/summary.md (tableau markdown)
+python3 bench/aggregate.py                 # -> results/summary.md (tableau markdown)
 ```
 
 ## Après
@@ -79,14 +77,14 @@ python3 aggregate.py                 # -> ../results/summary.md (tableau markdow
   ```bash
   cd repo && make -f docker.mk          # -> osm-google.map (variante after)
   # before: worktree de 89fb10a (MapServer/basemaps main), même commande
-  # fix:    git checkout f793716 && git apply ../fix-classitem.patch && make -f docker.mk
+  # fix:    git checkout f793716 && git apply fix-classitem.patch && make -f docker.mk
   ```
 
 ## Garde-fous intégrés (images vides / bon zoom)
 
 1. `select_tiles.py` compte les roads **en base** par tuile (`geometry && ST_MakeEnvelope`) et rejette toute tuile sous le seuil → impossible de mesurer des tuiles hors zone.
-2. `benchlib.check_zoom` asserte que le scaledenom de chaque tuile (conventions 0.28 mm OGC **et** 96 dpi) tombe strictement dans la fenêtre `[minscales[z], maxscales[z]]` du niveau z → la couche `roads<z>` est bien celle dessinée.
-3. `smoke.py` décode les PNG (décodeur stdlib intégré), exige un contenu réel (pixels non-fond ≥ seuils), vérifie dans les logs mapserver qu'aucun `roads<autre niveau>` n'apparaît, et compare after vs fix pixel à pixel.
+2. `benchlib.check_zoom` asserte que le scaledenom de chaque tuile (conventions 0.28 mm OGC **et** 96 dpi) tombe strictement dans la fenêtre `[minscales[z], maxscales[z]]` du niveau z. De plus, `smoke.py`/`run_bench.py` parsent les mapfiles locaux et assertent que `roads<z>` est le **seul** layer roads visible à ce scaledenom; le scope `full` envoie la liste explicite des layers visibles (un GetMap sans paramètre LAYERS est refusé par MapServer).
+3. `smoke.py` décode les PNG (décodeur stdlib intégré), exige un contenu réel (pixels non-fond ≥ seuils), vérifie dans les logs mapserver qu'aucun `roads<autre niveau>` n'apparaît (fenêtre de 2 s de silence avant chaque requête pour une attribution sûre), et compare after vs fix pixel à pixel.
 4. `run_bench.py` valide chaque réponse (magic bytes PNG, les exceptions WMS renvoient du XML en HTTP 200) et s'arrête après 2 échecs consécutifs.
 
 ## Notes / pièges connus

@@ -3,9 +3,12 @@
 
 import argparse
 import csv
+import os
 import statistics
 import sys
 from collections import defaultdict
+
+from benchlib import RESULTS
 
 
 def pct(new: float, ref: float) -> str:
@@ -17,8 +20,8 @@ def pct(new: float, ref: float) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--raw", default="../results/raw.csv")
-    parser.add_argument("--out", default="../results/summary.md")
+    parser.add_argument("--raw", default=os.path.join(RESULTS, "raw.csv"))
+    parser.add_argument("--out", default=os.path.join(RESULTS, "summary.md"))
     args = parser.parse_args()
 
     data: dict[tuple[int, str, str], list[float]] = defaultdict(list)

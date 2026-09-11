@@ -244,12 +244,21 @@ def local_mapfile(variant: str, mapdir: str = MAPDIR) -> str:
 def parse_map_layers(path: str) -> list[dict]:
     """Extract (name, minscaledenom, maxscaledenom) for every LAYER of a generated mapfile.
 
-    NAME sits in the layer header; walk back from each NAME line to the LAYER
-    keyword collecting scale directives, stopping at the previous NAME (which
-    means the candidate was not inside a layer header, e.g. SYMBOL/OUTPUTFORMAT).
+    Scale directives may sit before AND/OR after the NAME line depending on the
+    template, so walk back to the LAYER keyword and forward to the first CLASS
+    (never stop on END: it may close a nested PROJECTION/COMPOSITE block).
+    Stop the backward walk at a previous NAME line: the candidate was then not
+    inside a layer header (e.g. SYMBOL/OUTPUTFORMAT names).
     """
     with open(path, encoding="utf-8", errors="replace") as fh:
         lines = fh.read().splitlines()
+
+    def collect(text: str, info: dict) -> None:
+        if text.startswith("MINSCALEDENOM"):
+            info["min"] = float(text.split()[1])
+        elif text.startswith("MAXSCALEDENOM"):
+            info["max"] = float(text.split()[1])
+
     layers = []
     for i, line in enumerate(lines):
         stripped = line.strip()
@@ -258,8 +267,7 @@ def parse_map_layers(path: str) -> list[dict]:
         parts = stripped.split()
         if len(parts) < 2:
             continue
-        name = parts[1].strip('"')
-        info: dict = {"name": name, "min": None, "max": None}
+        info: dict = {"name": parts[1].strip('"'), "min": None, "max": None}
         found_layer = False
         j = i - 1
         while j >= 0:
@@ -269,13 +277,16 @@ def parse_map_layers(path: str) -> list[dict]:
                 break
             if t.startswith("NAME"):
                 break
-            if t.startswith("MINSCALEDENOM"):
-                info["min"] = float(t.split()[1])
-            elif t.startswith("MAXSCALEDENOM"):
-                info["max"] = float(t.split()[1])
+            collect(t, info)
             j -= 1
-        if found_layer:
-            layers.append(info)
+        if not found_layer:
+            continue
+        for k in range(i + 1, len(lines)):
+            t = lines[k].strip()
+            if t in ("CLASS", "LAYER"):
+                break
+            collect(t, info)
+        layers.append(info)
     return layers
 
 

@@ -2,6 +2,13 @@
 """
 Timing runner: alternates variants (A/B/C rotation) tile by tile so cache/thermal
 drift affects all variants equally. Writes results/raw.csv incrementally.
+
+Scopes:
+  full  - every layer visible at the tile scale (explicit LAYERS list parsed
+          from the local mapfile; a GetMap without LAYERS is rejected)
+  roads - LAYERS=roads<zoom> only (isolates the classification change)
+  floor - LAYERS=roads0, a real layer invisible at every benchmarked zoom
+          (measures WMS + mapfile parsing + HTTP overhead)
 """
 
 import argparse
@@ -11,20 +18,33 @@ import statistics
 import sys
 import time
 
-from benchlib import MAPFILES, VARIANTS, FetchError, fetch_tile, load_tiles, wms_url
+from benchlib import (
+    MAPDIR,
+    MAPFILES,
+    RESULTS,
+    VARIANTS,
+    FetchError,
+    check_roads_layer,
+    fetch_tile,
+    load_tiles,
+    local_mapfile,
+    scaledenom,
+    wms_url,
+)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=int(os.environ.get("BENCH_PORT", "80")))
-    parser.add_argument("--tiles", default="../results/tiles.json")
-    parser.add_argument("--out", default="../results/raw.csv")
+    parser.add_argument("--tiles", default=os.path.join(RESULTS, "tiles.json"))
+    parser.add_argument("--out", default=os.path.join(RESULTS, "raw.csv"))
+    parser.add_argument("--mapdir", default=MAPDIR)
     parser.add_argument("--variants", default=",".join(VARIANTS))
     parser.add_argument("--scopes", default="full,roads", help="full and/or roads")
     parser.add_argument("--repeats", type=int, default=9)
     parser.add_argument("--warmup", type=int, default=2)
     parser.add_argument("--max-tiles", type=int, default=0, help="0 = all tiles per zoom")
-    parser.add_argument("--floor-repeats", type=int, default=3, help="probes with a nonexistent LAYERS value (overhead floor)")
+    parser.add_argument("--floor-repeats", type=int, default=3, help="overhead floor probes per zoom")
     args = parser.parse_args()
 
     variants = args.variants.split(",")
@@ -34,6 +54,17 @@ def main() -> int:
     tiles_by_zoom = {z: [t for t in all_tiles if t.zoom == z] for z in zooms}
     if args.max_tiles:
         tiles_by_zoom = {z: ts[: args.max_tiles] for z, ts in tiles_by_zoom.items()}
+
+    # fail fast: roads<z> must be the only visible roads layer; cache full-scope layer lists
+    full_layers: dict[tuple[str, int], str] = {}
+    for variant in variants:
+        path = local_mapfile(variant, args.mapdir)
+        for zoom in zooms:
+            sd = scaledenom(tiles_by_zoom[zoom][0].bbox)
+            visible = check_roads_layer(path, zoom, sd)
+            assert "roads0" not in visible, "floor layer roads0 visible at z%d" % zoom
+            full_layers[(variant, zoom)] = ",".join(visible)
+    print("layer visibility checks passed for %s at zooms %s" % (variants, zooms))
 
     total_requests = sum(
         len(ts) * (args.warmup + args.repeats) * len(variants) * len(scopes) for ts in tiles_by_zoom.values()
@@ -50,13 +81,12 @@ def main() -> int:
         writer = csv.writer(fh)
         writer.writerow(["zoom", "tile_x", "tile_y", "scope", "variant", "repeat", "ms", "bytes"])
 
+        def layers_for(scope: str, variant: str, zoom: int) -> str:
+            return {"full": full_layers[(variant, zoom)], "roads": "roads%d" % zoom, "floor": "roads0"}[scope]
+
         def run(zoom: int, tile, scope: str, variant: str, repeat: int, measured: bool) -> bool:
             nonlocal done
-            # floor scope: a real layer whose scale window excludes every benchmarked
-            # zoom (level 0 draws only at scaledenom >= 332M) -> valid empty PNG that
-            # measures WMS + mapfile parsing + process overhead
-            layers = {"full": None, "roads": "roads%d" % zoom, "floor": "roads0"}[scope]
-            url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers)
+            url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers_for(scope, variant, zoom))
             try:
                 elapsed, data = fetch_tile(url)
             except FetchError as exc:
@@ -80,7 +110,6 @@ def main() -> int:
 
         for zoom in zooms:
             tiles = tiles_by_zoom[zoom]
-            # overhead floor: request with a nonexistent LAYERS value (WMS draws nothing)
             for r in range(args.floor_repeats):
                 if not run(zoom, tiles[0], "floor", "after", r, True):
                     aborted = True
@@ -115,7 +144,8 @@ def main() -> int:
                         break
                 if aborted:
                     break
-                meds = {v: statistics.median(timings[(zoom, "roads", v)]) for v in variants if (zoom, "roads", v) in timings}
+                meds = {v: statistics.median(timings[(zoom, "roads", v)])
+                        for v in variants if (zoom, "roads", v) in timings}
                 print("z%d tile %d/%d done - roads medians (ms): %s" % (
                     zoom, tile.x, tile.y, {k: round(v) for k, v in meds.items()}))
             if aborted:
