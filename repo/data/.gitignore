@@ -1,0 +1,5 @@
+*.zip
+README
+land_polygons.*
+simplified_land_polygons.*
+*.pbf

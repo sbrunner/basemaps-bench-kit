@@ -1,0 +1,276 @@
+{
+ "tiles": {
+  "z12_roads_before": {
+   "ms": 109.1,
+   "width": 256,
+   "height": 256,
+   "bytes": 22605,
+   "distinct_colors": 1482,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 13.239
+  },
+  "z12_roads_after": {
+   "ms": 104.8,
+   "width": 256,
+   "height": 256,
+   "bytes": 22605,
+   "distinct_colors": 1482,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 13.239
+  },
+  "z12_roads_fix": {
+   "ms": 109.3,
+   "width": 256,
+   "height": 256,
+   "bytes": 22605,
+   "distinct_colors": 1482,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 13.239
+  },
+  "z14_roads_before": {
+   "ms": 76.0,
+   "width": 256,
+   "height": 256,
+   "bytes": 37309,
+   "distinct_colors": 2643,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 31.125
+  },
+  "z14_roads_after": {
+   "ms": 75.0,
+   "width": 256,
+   "height": 256,
+   "bytes": 40634,
+   "distinct_colors": 2650,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 24.167
+  },
+  "z14_roads_fix": {
+   "ms": 88.0,
+   "width": 256,
+   "height": 256,
+   "bytes": 40634,
+   "distinct_colors": 2650,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 24.167
+  },
+  "z16_roads_before": {
+   "ms": 54.5,
+   "width": 256,
+   "height": 256,
+   "bytes": 38120,
+   "distinct_colors": 2725,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 41.988
+  },
+  "z16_roads_after": {
+   "ms": 73.4,
+   "width": 256,
+   "height": 256,
+   "bytes": 42814,
+   "distinct_colors": 3215,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 37.241
+  },
+  "z16_roads_fix": {
+   "ms": 62.9,
+   "width": 256,
+   "height": 256,
+   "bytes": 42814,
+   "distinct_colors": 3215,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 37.241
+  },
+  "z18_roads_before": {
+   "ms": 48.1,
+   "width": 256,
+   "height": 256,
+   "bytes": 27020,
+   "distinct_colors": 1546,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 21.054
+  },
+  "z18_roads_after": {
+   "ms": 52.0,
+   "width": 256,
+   "height": 256,
+   "bytes": 27020,
+   "distinct_colors": 1546,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 21.054
+  },
+  "z18_roads_fix": {
+   "ms": 52.4,
+   "width": 256,
+   "height": 256,
+   "bytes": 27020,
+   "distinct_colors": 1546,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 21.054
+  }
+ },
+ "log_layer_checks": [
+  {
+   "request": "z12_roads_before",
+   "roads_levels_in_logs": [
+    12
+   ],
+   "ok": true
+  },
+  {
+   "request": "z12_roads_after",
+   "roads_levels_in_logs": [
+    12
+   ],
+   "ok": true
+  },
+  {
+   "request": "z12_roads_fix",
+   "roads_levels_in_logs": [
+    12
+   ],
+   "ok": true
+  },
+  {
+   "request": "z14_roads_before",
+   "roads_levels_in_logs": [
+    12,
+    14
+   ],
+   "ok": false
+  },
+  {
+   "request": "z14_roads_after",
+   "roads_levels_in_logs": [
+    14
+   ],
+   "ok": true
+  },
+  {
+   "request": "z14_roads_fix",
+   "roads_levels_in_logs": [
+    14
+   ],
+   "ok": true
+  },
+  {
+   "request": "z16_roads_before",
+   "roads_levels_in_logs": [
+    14,
+    16
+   ],
+   "ok": false
+  },
+  {
+   "request": "z16_roads_after",
+   "roads_levels_in_logs": [
+    14,
+    16
+   ],
+   "ok": false
+  },
+  {
+   "request": "z16_roads_fix",
+   "roads_levels_in_logs": [
+    16
+   ],
+   "ok": true
+  },
+  {
+   "request": "z18_roads_before",
+   "roads_levels_in_logs": [
+    16,
+    18
+   ],
+   "ok": false
+  },
+  {
+   "request": "z18_roads_after",
+   "roads_levels_in_logs": [
+    16,
+    18
+   ],
+   "ok": false
+  },
+  {
+   "request": "z18_roads_fix",
+   "roads_levels_in_logs": [
+    18
+   ],
+   "ok": true
+  }
+ ],
+ "after_vs_fix_diff_pct": {
+  "12": 0.0,
+  "14": 0.0,
+  "16": 0.0,
+  "18": 0.0
+ },
+ "failures": [
+  "z12_full_before: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z12_full_after: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z12_full_fix: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z14_full_before: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z14_full_after: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z14_full_fix: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z14_roads_before: logs mention roads levels [12, 14] (expected only 14)",
+  "z16_full_before: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z16_full_after: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z16_full_fix: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z16_roads_before: logs mention roads levels [14, 16] (expected only 16)",
+  "z16_roads_after: logs mention roads levels [14, 16] (expected only 16)",
+  "z18_full_before: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z18_full_after: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z18_full_fix: not a PNG (Content-Type: text/xml; charset=UTF-8): <?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?> <ServiceExceptionReport version=\"1.3.0\" xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc http://schemas.opengis.net/wms/1.3.0/exceptions_1_3_0.xsd\"> <Service",
+  "z18_roads_before: logs mention roads levels [16, 18] (expected only 18)",
+  "z18_roads_after: logs mention roads levels [16, 18] (expected only 18)"
+ ]
+}

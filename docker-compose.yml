@@ -1,0 +1,87 @@
+name: basemaps-bench
+
+services:
+  postgis:
+    image: ghcr.io/camptocamp/postgres:14-postgis-3
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: osm
+      POSTGRES_USER: osm
+      POSTGRES_PASSWORD: osm
+    volumes:
+      - ./repo/docker/postgis/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro
+      - postgis-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U osm -d osm"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  imposm:
+    build:
+      context: repo/docker/imposm
+    depends_on:
+      postgis:
+        condition: service_healthy
+    user: www-data
+    volumes:
+      - ./repo/imposm3-mapping.json:/settings/basemaps-mapping.json:ro
+      - imposm-cache:/data
+    environment:
+      # Vaud + Geneva cantonal extracts (dense urban areas, ~80MB total).
+      # For the full country (needs ~10GB free docker disk), replace with:
+      #   https://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+      PBF_FILES: >-
+        https://download.openstreetmap.fr/extracts/europe/switzerland/vaud-latest.osm.pbf
+        https://download.openstreetmap.fr/extracts/europe/switzerland/geneva-latest.osm.pbf
+      PGUSER: osm
+      PGPASSWORD: osm
+      PGDATABASE: osm
+      PGPORT: "5432"
+      PGHOST: postgis
+      IMPOSM_CONNECTION: postgis://osm:osm@postgis/osm
+      # no periodic diff updates: keep the DB quiet during benchmarks
+      TIME: "0"
+      SETTINGS: settings
+      CACHE: cache
+      IMPORT_DONE: import_done
+      IMPORT_QUEUE: import_queue
+      SRID: "3857"
+      OPTIMIZE: "false"
+      DBSCHEMA_PRODUCTION: prod
+      DBSCHEMA_IMPORT: import
+      DBSCHEMA_BACKUP: backup
+      QGIS_STYLE: "no"
+      CLIP: "no"
+
+  mapserver:
+    build:
+      context: repo/docker/webserver
+    # skip the repo's docker-entrypoint.sh (it runs `make -f docker.mk` inside
+    # /etc/mapserver, which only works when the full repo tree is mounted;
+    # here the pre-built mapfiles are mounted individually)
+    entrypoint: ["/usr/local/bin/start-server"]
+    command: []
+    depends_on:
+      postgis:
+        condition: service_healthy
+    environment:
+      MS_MAPFILE: /etc/mapserver/osm-google.map
+      # 4 during smoke tests (layer names in logs), 0 during timing runs
+      MS_DEBUGLEVEL: ${MS_DEBUGLEVEL:-4}
+      MAPSERVER_CONFIG_FILE: /etc/mapserver/config.conf
+    ports:
+      - "${BENCH_PORT:-80}:80"
+    volumes:
+      # individual file mounts: the image's own /etc/mapserver (with data/
+      # land polygons + fonts built by its Dockerfile) stays visible
+      - ./runtime/osm-google.map:/etc/mapserver/osm-google.map:ro
+      - ./runtime/osm-google-before.map:/etc/mapserver/osm-google-before.map:ro
+      - ./runtime/osm-google-after.map:/etc/mapserver/osm-google-after.map:ro
+      - ./runtime/osm-google-fix.map:/etc/mapserver/osm-google-fix.map:ro
+      - ./runtime/config.conf:/etc/mapserver/config.conf:ro
+
+volumes:
+  postgis-data:
+  imposm-cache:
