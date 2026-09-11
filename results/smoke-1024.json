@@ -1,0 +1,324 @@
+{
+ "tiles": {
+  "z12-1024_full_before": {
+   "ms": 546.9,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 233303,
+   "distinct_colors": 7951,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 19.982
+  },
+  "z12-1024_full_after": {
+   "ms": 415.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 237916,
+   "distinct_colors": 9365,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 20.129
+  },
+  "z12-1024_full_fix": {
+   "ms": 560.0,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 237916,
+   "distinct_colors": 9365,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 20.129
+  },
+  "z12-1024_roads_before": {
+   "ms": 141.7,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 114515,
+   "distinct_colors": 1676,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 3.847
+  },
+  "z12-1024_roads_after": {
+   "ms": 181.6,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 114515,
+   "distinct_colors": 1676,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 3.847
+  },
+  "z12-1024_roads_fix": {
+   "ms": 213.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 114515,
+   "distinct_colors": 1676,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 3.847
+  },
+  "z14-1024_full_before": {
+   "ms": 287.0,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 312363,
+   "distinct_colors": 9999,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 19.316
+  },
+  "z14-1024_full_after": {
+   "ms": 629.0,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 349831,
+   "distinct_colors": 14741,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 19.54
+  },
+  "z14-1024_full_fix": {
+   "ms": 433.8,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 349831,
+   "distinct_colors": 14741,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 19.54
+  },
+  "z14-1024_roads_before": {
+   "ms": 109.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 192369,
+   "distinct_colors": 5435,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 8.018
+  },
+  "z14-1024_roads_after": {
+   "ms": 131.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 194338,
+   "distinct_colors": 5909,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 6.608
+  },
+  "z14-1024_roads_fix": {
+   "ms": 124.4,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 194338,
+   "distinct_colors": 5909,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 6.608
+  },
+  "z16-1024_full_before": {
+   "ms": 141.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 384666,
+   "distinct_colors": 7848,
+   "background": [
+    200,
+    200,
+    200
+   ],
+   "non_bg_pct": 60.766
+  },
+  "z16-1024_full_after": {
+   "ms": 445.5,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 488188,
+   "distinct_colors": 13900,
+   "background": [
+    200,
+    200,
+    200
+   ],
+   "non_bg_pct": 59.778
+  },
+  "z16-1024_full_fix": {
+   "ms": 445.8,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 488188,
+   "distinct_colors": 13900,
+   "background": [
+    200,
+    200,
+    200
+   ],
+   "non_bg_pct": 59.778
+  },
+  "z16-1024_roads_before": {
+   "ms": 115.0,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 247497,
+   "distinct_colors": 6174,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 16.655
+  },
+  "z16-1024_roads_after": {
+   "ms": 100.7,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 315781,
+   "distinct_colors": 6226,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 12.945
+  },
+  "z16-1024_roads_fix": {
+   "ms": 99.7,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 315781,
+   "distinct_colors": 6226,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 12.945
+  },
+  "z18-1024_full_before": {
+   "ms": 152.4,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 485931,
+   "distinct_colors": 4608,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 60.841
+  },
+  "z18-1024_full_after": {
+   "ms": 547.5,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 547142,
+   "distinct_colors": 6952,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 61.625
+  },
+  "z18-1024_full_fix": {
+   "ms": 423.5,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 547142,
+   "distinct_colors": 6952,
+   "background": [
+    242,
+    239,
+    233
+   ],
+   "non_bg_pct": 61.625
+  },
+  "z18-1024_roads_before": {
+   "ms": 84.1,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 299504,
+   "distinct_colors": 3260,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 16.51
+  },
+  "z18-1024_roads_after": {
+   "ms": 94.6,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 326380,
+   "distinct_colors": 4753,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 15.729
+  },
+  "z18-1024_roads_fix": {
+   "ms": 111.2,
+   "width": 1024,
+   "height": 1024,
+   "bytes": 326380,
+   "distinct_colors": 4753,
+   "background": [
+    153,
+    179,
+    204
+   ],
+   "non_bg_pct": 15.729
+  }
+ },
+ "log_layer_checks": [],
+ "after_vs_fix_diff_pct": {
+  "12": 0.0,
+  "14": 0.0,
+  "16": 0.0,
+  "18": 0.0
+ },
+ "failures": []
+}

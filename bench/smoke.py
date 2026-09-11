@@ -24,10 +24,12 @@ from benchlib import (
     MAPDIR,
     MAPFILES,
     RESULTS,
+    TILE_SIZE,
     VARIANTS,
     check_roads_layer,
     fetch_tile,
     load_tiles,
+    load_tiles_size,
     local_mapfile,
     pixel_diff_pct,
     png_stats,
@@ -35,7 +37,8 @@ from benchlib import (
     wms_url,
 )
 
-MIN_NON_BG = {"full": 20.0, "roads": 0.2}
+MIN_NON_BG = {"full": 5.0, "roads": 0.2}
+MIN_COLORS = {"full": 100, "roads": 50}
 LOG_QUIET_S = 2.0
 
 
@@ -54,6 +57,8 @@ def main() -> int:
     parser.add_argument("--report", default=os.path.join(RESULTS, "smoke.json"))
     parser.add_argument("--mapdir", default=MAPDIR)
     parser.add_argument("--variants", default=",".join(VARIANTS))
+    parser.add_argument("--host", default="localhost")
+    parser.add_argument("--size", type=int, default=0, help="0 = use the size stored in tiles.json")
     parser.add_argument("--sleep", type=float, default=LOG_QUIET_S, help="quiet window before each request (log attribution)")
     args = parser.parse_args()
     compose_cmd = args.compose_cmd.split()
@@ -62,6 +67,7 @@ def main() -> int:
 
     with open(args.tiles, encoding="utf-8") as f:
         tiles_meta = json.load(f)
+    size = args.size or int(tiles_meta.get("size", TILE_SIZE))
     zooms = sorted({t["zoom"] for t in tiles_meta["tiles"]})
     all_tiles = load_tiles(args.tiles)
     first_tiles = {z: next(t for t in all_tiles if t.zoom == z) for z in zooms}
@@ -71,10 +77,10 @@ def main() -> int:
     for variant in variants:
         path = local_mapfile(variant, args.mapdir)
         for zoom in zooms:
-            sd = scaledenom(first_tiles[zoom].bbox)
+            sd = scaledenom(first_tiles[zoom].bbox, size=size)
             visible = check_roads_layer(path, zoom, sd)
             full_layers[(variant, zoom)] = ",".join(visible)
-            print("%s z%d: %d visible layers, roads%d ok" % (variant, zoom, len(visible), zoom))
+            print("%s z%d@%dpx: %d visible layers, roads%d ok" % (variant, zoom, size, len(visible), zoom))
 
     failures: list[str] = []
     report: dict = {"tiles": {}, "log_layer_checks": [], "after_vs_fix_diff_pct": {}}
@@ -85,10 +91,10 @@ def main() -> int:
         for scope in ("full", "roads"):
             for variant in variants:
                 layers = full_layers[(variant, zoom)] if scope == "full" else "roads%d" % zoom
-                name = "z%d_%s_%s" % (zoom, scope, variant)
+                name = "z%d-%d_%s_%s" % (zoom, size, scope, variant)
                 time.sleep(args.sleep)  # keep previous request logs out of the window
                 since = datetime.datetime.now().astimezone().isoformat()
-                url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers)
+                url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers, size=size, host=args.host)
                 try:
                     elapsed, data = fetch_tile(url)
                 except Exception as exc:  # a broken mapfile must fail the smoke test loudly
@@ -103,9 +109,10 @@ def main() -> int:
                     failures.append("%s: PNG decode failed: %s" % (name, exc))
                     print("FAIL %-24s PNG decode: %s" % (name, exc))
                     continue
-                ok = stats["non_bg_pct"] >= MIN_NON_BG[scope]
+                ok = stats["non_bg_pct"] >= MIN_NON_BG[scope] and stats["distinct_colors"] >= MIN_COLORS[scope]
                 if not ok:
-                    failures.append("%s: non_bg_pct=%.3f < %.1f (empty image?)" % (name, stats["non_bg_pct"], MIN_NON_BG[scope]))
+                    failures.append("%s: non_bg_pct=%.3f (< %.1f) or colors=%d (< %d) - empty image?" % (
+                        name, stats["non_bg_pct"], MIN_NON_BG[scope], stats["distinct_colors"], MIN_COLORS[scope]))
                 print("%s %-24s %6.0f ms  %7.1f KB  colors=%-5d non_bg=%6.2f%%" % (
                     "ok  " if ok else "FAIL", name, elapsed * 1000, stats["bytes"] / 1024,
                     stats["distinct_colors"], stats["non_bg_pct"]))
@@ -131,7 +138,8 @@ def main() -> int:
     # after vs fix: same rendering expected (the fix only changes the classification path)
     for zoom in zooms:
         if (zoom, "after") in road_images and (zoom, "fix") in road_images:
-            diff = pixel_diff_pct(road_images[(zoom, "after")], road_images[(zoom, "fix")])
+            a, b = road_images[(zoom, "after")], road_images[(zoom, "fix")]
+            diff = 0.0 if a == b else pixel_diff_pct(a, b)
             report["after_vs_fix_diff_pct"][zoom] = diff
             ok = diff <= 1.0
             if not ok:

@@ -59,8 +59,9 @@ def main() -> int:
             lines.append("| %d | %s | %s | %s | %s | %s | %s |" % (
                 zoom, scope, " | ".join(meds), after_vs, fix_vs, p90s, n))
     floors = {k[0]: statistics.median(v) for k, v in data.items() if k[1] == "floor"}
-    lines += ["", "Overhead floor (empty render: WMS + mapfile parse, ms median): " +
-              ", ".join("z%d=%.0f" % (z, m) for z, m in sorted(floors.items())), ""]
+    if floors:
+        lines += ["", "Overhead floor (empty render: WMS + mapfile parse, ms median): " +
+                  ", ".join("z%d=%.0f" % (z, m) for z, m in sorted(floors.items())), ""]
 
     text = "\n".join(lines)
     with open(args.out, "w", encoding="utf-8") as f:

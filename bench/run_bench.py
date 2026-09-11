@@ -7,8 +7,9 @@ Scopes:
   full  - every layer visible at the tile scale (explicit LAYERS list parsed
           from the local mapfile; a GetMap without LAYERS is rejected)
   roads - LAYERS=roads<zoom> only (isolates the classification change)
-  floor - LAYERS=roads0, a real layer invisible at every benchmarked zoom
-          (measures WMS + mapfile parsing + HTTP overhead)
+  floor - disabled by default: MapServer raises a ServiceException when an
+          explicitly requested layer is invisible at the request scale, so an
+          empty-render overhead floor cannot be probed this way
 """
 
 import argparse
@@ -22,11 +23,13 @@ from benchlib import (
     MAPDIR,
     MAPFILES,
     RESULTS,
+    TILE_SIZE,
     VARIANTS,
     FetchError,
     check_roads_layer,
     fetch_tile,
     load_tiles,
+    load_tiles_size,
     local_mapfile,
     scaledenom,
     wms_url,
@@ -40,15 +43,19 @@ def main() -> int:
     parser.add_argument("--out", default=os.path.join(RESULTS, "raw.csv"))
     parser.add_argument("--mapdir", default=MAPDIR)
     parser.add_argument("--variants", default=",".join(VARIANTS))
+    parser.add_argument("--host", default="localhost")
+    parser.add_argument("--size", type=int, default=0, help="0 = use the size stored in tiles.json")
     parser.add_argument("--scopes", default="full,roads", help="full and/or roads")
     parser.add_argument("--repeats", type=int, default=9)
     parser.add_argument("--warmup", type=int, default=2)
     parser.add_argument("--max-tiles", type=int, default=0, help="0 = all tiles per zoom")
-    parser.add_argument("--floor-repeats", type=int, default=3, help="overhead floor probes per zoom")
+    parser.add_argument("--floor-repeats", type=int, default=0,
+                        help="overhead floor probes per zoom (0 = disabled: MapServer rejects LAYERS that are invisible at the request scale, so an empty-render floor is not possible)")
     args = parser.parse_args()
 
     variants = args.variants.split(",")
     scopes = args.scopes.split(",")
+    size = args.size or load_tiles_size(args.tiles)
     all_tiles = load_tiles(args.tiles)
     zooms = sorted({t.zoom for t in all_tiles})
     tiles_by_zoom = {z: [t for t in all_tiles if t.zoom == z] for z in zooms}
@@ -60,17 +67,18 @@ def main() -> int:
     for variant in variants:
         path = local_mapfile(variant, args.mapdir)
         for zoom in zooms:
-            sd = scaledenom(tiles_by_zoom[zoom][0].bbox)
+            sd = scaledenom(tiles_by_zoom[zoom][0].bbox, size=size)
             visible = check_roads_layer(path, zoom, sd)
             assert "roads0" not in visible, "floor layer roads0 visible at z%d" % zoom
             full_layers[(variant, zoom)] = ",".join(visible)
-    print("layer visibility checks passed for %s at zooms %s" % (variants, zooms))
+    print("layer visibility checks passed for %s at zooms %s (size=%d, host=%s:%d)" % (
+        variants, zooms, size, args.host, args.port))
 
     total_requests = sum(
         len(ts) * (args.warmup + args.repeats) * len(variants) * len(scopes) for ts in tiles_by_zoom.values()
     ) + len(zooms) * args.floor_repeats
-    print("variants=%s scopes=%s zooms=%s repeats=%d(+%d warmup) -> %d requests" % (
-        variants, scopes, zooms, args.repeats, args.warmup, total_requests))
+    print("variants=%s scopes=%s zooms=%s size=%d repeats=%d(+%d warmup) -> %d requests" % (
+        variants, scopes, zooms, size, args.repeats, args.warmup, total_requests))
 
     timings: dict[tuple[int, str, str], list[float]] = {}
     done = 0
@@ -86,7 +94,8 @@ def main() -> int:
 
         def run(zoom: int, tile, scope: str, variant: str, repeat: int, measured: bool) -> bool:
             nonlocal done
-            url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers_for(scope, variant, zoom))
+            url = wms_url(args.port, MAPFILES[variant], tile.bbox, layers_for(scope, variant, zoom),
+                          size=size, host=args.host)
             try:
                 elapsed, data = fetch_tile(url)
             except FetchError as exc:

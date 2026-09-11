@@ -13,7 +13,7 @@ import zlib
 from collections import Counter
 from dataclasses import dataclass
 
-TILE_SIZE = 256
+TILE_SIZE = 1024
 WEB_MERCATOR_HALF = 20037508.342789244
 OGC_PIXEL_M = 0.00028  # OGC WMS reference pixel: 0.28 mm
 DPI96_PIXEL_M = 0.0254 / 96  # 96 dpi convention
@@ -40,11 +40,19 @@ LEVEL_RANGES = {
 
 @dataclass(frozen=True)
 class Tile:
-    zoom: int
-    x: int
+    zoom: int  # target scale level (roads<zoom> is the layer drawn)
+    x: int  # coordinates on the underlying tile grid (zoom - size_shift)
     y: int
     bbox: tuple[float, float, float, float]  # minx, miny, maxx, maxy (EPSG:3857)
     roads_count: int = -1
+    tile_zoom: int = -1
+
+
+def size_shift(size: int) -> int:
+    """A size-px request keeps the scaledenom of zoom z when it covers the bbox of a (z - shift) tile."""
+    shift = int(round(math.log2(size / TILE_SIZE)))
+    assert 2**shift * TILE_SIZE == size, "size must be 256 * 2^n"
+    return shift
 
 
 def lonlat_to_tile(lon: float, lat: float, zoom: int) -> tuple[int, int]:
@@ -64,35 +72,40 @@ def tile_bbox(x: int, y: int, zoom: int) -> tuple[float, float, float, float]:
     return minx, miny, maxx, maxy
 
 
-def scaledenom(bbox: tuple[float, float, float, float], pixel_m: float = OGC_PIXEL_M) -> float:
+def scaledenom(bbox: tuple[float, float, float, float], pixel_m: float = OGC_PIXEL_M, size: int = TILE_SIZE) -> float:
     width_m = bbox[2] - bbox[0]
-    return width_m / (TILE_SIZE * pixel_m)
+    return width_m / (size * pixel_m)
 
 
-def check_zoom(zoom: int, bbox: tuple[float, float, float, float]) -> None:
-    """Fail fast unless a standard 256px tile at this zoom lands strictly inside level zoom's scale window."""
+def check_zoom(zoom: int, bbox: tuple[float, float, float, float], size: int = TILE_SIZE) -> None:
+    """Fail fast unless a size-px request on this bbox lands strictly inside level zoom's scale window."""
     lo, hi = LEVEL_RANGES[zoom]
     for pixel_m, label in ((OGC_PIXEL_M, "OGC 0.28mm"), (DPI96_PIXEL_M, "96dpi")):
-        sd = scaledenom(bbox, pixel_m)
+        sd = scaledenom(bbox, pixel_m, size)
         assert lo < sd < hi, (
             "zoom %d: scaledenom %.0f (%s) outside level window [%d, %d]" % (zoom, sd, label, lo, hi)
         )
 
 
-def tile_grid(center_lon: float, center_lat: float, zoom: int, grid: int) -> list[Tile]:
-    cx, cy = lonlat_to_tile(center_lon, center_lat, zoom)
+def tile_grid(center_lon: float, center_lat: float, zoom: int, grid: int, size: int = TILE_SIZE) -> list[Tile]:
+    """Tiles of the (zoom - shift) XYZ grid, labelled with the target scale level zoom."""
+    shift = size_shift(size)
+    tile_zoom = zoom - shift
+    assert tile_zoom >= 0, "zoom %d too low for size %d" % (zoom, size)
+    cx, cy = lonlat_to_tile(center_lon, center_lat, tile_zoom)
     half = grid // 2
     tiles = []
     for dy in range(-half, grid - half):
         for dx in range(-half, grid - half):
             x, y = cx + dx, cy + dy
-            bbox = tile_bbox(x, y, zoom)
-            check_zoom(zoom, bbox)
-            tiles.append(Tile(zoom, x, y, bbox))
+            bbox = tile_bbox(x, y, tile_zoom)
+            check_zoom(zoom, bbox, size)
+            tiles.append(Tile(zoom, x, y, bbox, tile_zoom=tile_zoom))
     return tiles
 
 
-def wms_url(port: int, mapfile: str, bbox: tuple[float, float, float, float], layers: str | None = None) -> str:
+def wms_url(port: int, mapfile: str, bbox: tuple[float, float, float, float], layers: str | None = None,
+            size: int = TILE_SIZE, host: str = "localhost") -> str:
     params = [
         "SERVICE=WMS",
         "VERSION=1.3.0",
@@ -101,14 +114,14 @@ def wms_url(port: int, mapfile: str, bbox: tuple[float, float, float, float], la
         "STYLES=",
         "CRS=EPSG:3857",
         "BBOX=%.6f,%.6f,%.6f,%.6f" % bbox,
-        "WIDTH=%d" % TILE_SIZE,
-        "HEIGHT=%d" % TILE_SIZE,
+        "WIDTH=%d" % size,
+        "HEIGHT=%d" % size,
         "FORMAT=image/png",
         "TRANSPARENT=FALSE",
     ]
     if layers is not None:
         params.append("LAYERS=%s" % layers)
-    return "http://localhost:%d/?%s" % (port, "&".join(params))
+    return "http://%s:%d/?%s" % (host, port, "&".join(params))
 
 
 class FetchError(RuntimeError):
@@ -232,7 +245,13 @@ def pixel_diff_pct(a: bytes, b: bytes) -> float:
 def load_tiles(path: str) -> list[Tile]:
     with open(path, encoding="utf-8") as f:
         raw = json.load(f)
-    return [Tile(t["zoom"], t["x"], t["y"], tuple(t["bbox"]), t.get("roads_count", -1)) for t in raw["tiles"]]
+    return [Tile(t["zoom"], t["x"], t["y"], tuple(t["bbox"]), t.get("roads_count", -1), t.get("tile_zoom", t["zoom"]))
+            for t in raw["tiles"]]
+
+
+def load_tiles_size(path: str) -> int:
+    with open(path, encoding="utf-8") as f:
+        return int(json.load(f).get("size", TILE_SIZE))
 
 
 # --- mapfile parsing: explicit LAYERS lists instead of server-side guesswork --
