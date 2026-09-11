@@ -7603,8 +7603,8 @@ LAYER
         STYLE
             WIDTH 0.9
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
     END
     CLASS
@@ -8977,8 +8977,8 @@ LAYER
         STYLE
             WIDTH 0.9
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -10439,8 +10439,8 @@ LAYER
         STYLE
             WIDTH 2.3
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -10463,8 +10463,8 @@ LAYER
         STYLE
             WIDTH 0.8
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -10487,8 +10487,8 @@ LAYER
         STYLE
             WIDTH 0.8
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -10511,8 +10511,8 @@ LAYER
         STYLE
             WIDTH 0.8
             COLOR "#ffffff"
-            OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINEWIDTH 0.5
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -11914,7 +11914,7 @@ LAYER
             WIDTH 5.4
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -11938,7 +11938,7 @@ LAYER
             WIDTH 1.9
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -11962,7 +11962,7 @@ LAYER
             WIDTH 1.9
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -11986,7 +11986,7 @@ LAYER
             WIDTH 1.9
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -12010,7 +12010,7 @@ LAYER
             WIDTH 1.9
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -13387,10 +13387,10 @@ LAYER
     CLASS
         EXPRESSION ("[type]" = "service" AND "[service]" = "")
         STYLE
-            WIDTH 6.9
+            WIDTH 5.4
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -13414,7 +13414,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -13438,7 +13438,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -13462,7 +13462,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -13486,7 +13486,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -14869,10 +14869,10 @@ LAYER
     CLASS
         EXPRESSION ("[type]" = "service" AND "[service]" = "")
         STYLE
-            WIDTH 6.9
+            WIDTH 5.4
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -14896,7 +14896,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -14920,7 +14920,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -14944,7 +14944,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -14968,7 +14968,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -16351,10 +16351,10 @@ LAYER
     CLASS
         EXPRESSION ("[type]" = "service" AND "[service]" = "")
         STYLE
-            WIDTH 6.9
+            WIDTH 5.4
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -16378,7 +16378,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -16402,7 +16402,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -16426,7 +16426,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
@@ -16450,7 +16450,7 @@ LAYER
             WIDTH 3.15
             COLOR "#ffffff"
             OUTLINEWIDTH 1
-            OUTLINECOLOR 0 0 0
+            OUTLINECOLOR 193 181 157
         END
         LABEL
             TYPE TRUETYPE
